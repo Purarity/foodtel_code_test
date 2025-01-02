@@ -18,5 +18,5 @@ model Booking {
   bookerName  String
   email       String
   totalGuests Int
-  Time        DateTime
+  time        DateTime
 }
