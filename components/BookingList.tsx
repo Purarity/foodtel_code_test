@@ -27,7 +27,6 @@ export default function BookingList({
         }
       } else if (filterByDates) {
         const bookingTime = booking.time.getTime();
-        console.log(new Date(toDate).getTime() + 86400000);
         if (
           bookingTime >= new Date(fromDate).getTime() &&
           bookingTime < new Date(toDate).getTime() + 86400000 //before the next day
