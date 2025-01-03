@@ -77,7 +77,7 @@ export default function BookingList({
           className="border w-64 rounded p-1"
           value={filterString}
           onChange={(event) => setFilterString(event.currentTarget.value)}
-          placeholder="Filter by name and email..."
+          placeholder="Filter by name or email..."
         />
         <label htmlFor="filterByDate">
           Filter by dates:

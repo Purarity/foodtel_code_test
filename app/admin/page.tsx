@@ -4,7 +4,11 @@ import BookingList from "@/components/BookingList";
 
 export default async function Admin() {
   const prisma = new PrismaClient();
-  const bookings = await prisma.booking.findMany();
+  const bookings = await prisma.booking.findMany({
+    orderBy: {
+      time: "desc",
+    },
+  });
 
   return (
     <div className="max-w-[50rem] flex mx-auto flex-col">
