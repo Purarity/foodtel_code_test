@@ -8,7 +8,9 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {},
+      colors: {
+        "table-header": "#36304a"
+      },
     },
   },
   plugins: [],
