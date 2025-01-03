@@ -8,8 +8,13 @@ export default function BookingList({
   bookingList: Booking[];
 }) {
   const [filterString, setFilterString] = useState("");
+  const [filterByDates, setFilterByDates] = useState(false);
+  const formattedToday = new Date().toLocaleDateString();
+  const [fromDate, setFromDate] = useState(formattedToday);
+  const [toDate, setToDate] = useState(formattedToday);
 
   function renderTableBody(bookings: Booking[]) {
+    let filteringList: Booking[] = [];
     const filteredList = bookings.filter((booking) => {
       if (filterString) {
         if (
@@ -17,6 +22,15 @@ export default function BookingList({
             .toLowerCase()
             .includes(filterString.toLowerCase()) ||
           booking.email.toLowerCase().includes(filterString.toLowerCase())
+        ) {
+          return booking;
+        }
+      } else if (filterByDates) {
+        const bookingTime = booking.time.getTime();
+        console.log(new Date(toDate).getTime() + 86400000);
+        if (
+          bookingTime >= new Date(fromDate).getTime() &&
+          bookingTime < new Date(toDate).getTime() + 86400000 //before the next day
         ) {
           return booking;
         }
@@ -58,13 +72,47 @@ export default function BookingList({
 
   return (
     <div className="p-4 space-y-4">
-      <input
-        className="block border w-64 rounded p-1"
-        value={filterString}
-        onChange={(event) => setFilterString(event.currentTarget.value)}
-        placeholder="Search for name and email..."
-      />
-      <table className="table-fixed overflow-hidden w-3/4 text-center rounded-lg">
+      <div className="flex flex-wrap gap-4 items-center">
+        <input
+          className="border w-64 rounded p-1"
+          value={filterString}
+          onChange={(event) => setFilterString(event.currentTarget.value)}
+          placeholder="Filter by name and email..."
+        />
+        <label htmlFor="filterByDate">
+          Filter by dates:
+          <input
+            type="checkbox"
+            name="filterByDate"
+            id="filterByDate"
+            checked={filterByDates}
+            onChange={(event) => setFilterByDates(event.currentTarget.checked)}
+          />
+        </label>
+        <label htmlFor="fromDate">
+          From:
+          <input
+            type="date"
+            name="fromDate"
+            id="fromDate"
+            className="brightness-90 rounded px-1"
+            value={fromDate}
+            onChange={(event) => setFromDate(event.currentTarget.value)}
+          />
+        </label>
+        <label htmlFor="toDate">
+          To:
+          <input
+            type="date"
+            name="toDate"
+            id="toDate"
+            className="brightness-90 rounded px-1"
+            value={toDate}
+            onChange={(event) => setToDate(event.currentTarget.value)}
+          />
+        </label>
+      </div>
+      <table className="table-fixed overflow-hidden w-full text-center rounded-lg">
         <thead className="bg-table-header text-white">
           <tr>
             <th>Name</th>
