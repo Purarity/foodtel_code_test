@@ -1,6 +1,6 @@
 "use client";
 import type { Booking } from "@prisma/client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function BookingList({
   bookingList,
@@ -9,12 +9,11 @@ export default function BookingList({
 }) {
   const [filterString, setFilterString] = useState("");
   const [filterByDates, setFilterByDates] = useState(false);
-  const formattedToday = new Date().toLocaleDateString();
-  const [fromDate, setFromDate] = useState(formattedToday);
-  const [toDate, setToDate] = useState(formattedToday);
+  const [fromDate, setFromDate] = useState(new Date().toLocaleDateString());
+  const [toDate, setToDate] = useState(new Date().toLocaleDateString());
+  const shownBookingsCount = useRef(bookingList.length);
 
   function renderTableBody(bookings: Booking[]) {
-    let filteringList: Booking[] = [];
     const filteredList = bookings.filter((booking) => {
       if (filterString) {
         if (
@@ -37,6 +36,7 @@ export default function BookingList({
         return booking;
       }
     });
+    shownBookingsCount.current = filteredList.length;
 
     return (
       <tbody>
@@ -71,6 +71,7 @@ export default function BookingList({
 
   return (
     <div className="p-4 space-y-4">
+      <div>Found bookings: {shownBookingsCount.current}</div>
       <div className="flex flex-wrap gap-4 items-center">
         <input
           className="border w-64 rounded p-1"

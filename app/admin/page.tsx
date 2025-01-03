@@ -11,10 +11,9 @@ export default async function Admin() {
   });
 
   return (
-    <div className="max-w-[50rem] flex mx-auto flex-col">
-      <div>total bookings : {bookings.length}</div>
+    <>
       <AddBookingButton />
       <BookingList bookingList={bookings} />
-    </div>
+    </>
   );
 }
