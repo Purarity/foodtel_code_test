@@ -2,7 +2,7 @@
 
 import { addBooking } from "@/actions/bookings";
 import { BookingFormSchema, type BookingForm } from "@/zodSchemas";
-import { ChangeEvent, FormEvent, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { ZodError } from "zod";
 
 export default function BookingForm() {
@@ -22,21 +22,32 @@ export default function BookingForm() {
 
     try {
       //zod only accept time with seconds, we manually add it here so users dont have to
-      BookingFormSchema.parse({ ...formData, time: formData.time + ":00" });
+      const transformedTime = formData.time + ":00";
+      BookingFormSchema.parse({ ...formData, time: transformedTime });
       setFormErrors({});
-    } catch (validationError) {
-      if (validationError instanceof ZodError) {
+
+      const response = await addBooking({
+        ...formData,
+        time: transformedTime,
+      });
+
+      if (response.success) {
+        console.log(response);
+      }
+    } catch (error) {
+      if (error instanceof ZodError) {
         const fieldErrors: typeof formErrors = {};
-        validationError.errors.forEach(
-          (error) => (fieldErrors[error.path[0]] = error.message)
+        error.errors.forEach(
+          (validationError) =>
+            (fieldErrors[validationError.path[0]] = validationError.message)
         );
         setFormErrors(fieldErrors);
+
+        //focus on the first error input
         document.getElementById(Object.keys(fieldErrors)[0])?.focus();
         return;
       }
     }
-
-    const response = await addBooking(formData);
   }
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -48,7 +59,7 @@ export default function BookingForm() {
           ...previous,
           date: new Intl.DateTimeFormat("sv-SE", {
             dateStyle: "short",
-          }).format(new Date(formData.date)),
+          }).format(new Date(value)),
         }));
         break;
 
@@ -142,7 +153,9 @@ export default function BookingForm() {
           />
         </label>
       </div>
-      <button>submit</button>
+
+      <button className="bg-[#353b39]">Submit</button>
+
       {Object.keys(formErrors).length ? (
         <div className="bg-red-500 text-white p-2 rounded">
           {Object.entries(formErrors).map(([name, message]) => (

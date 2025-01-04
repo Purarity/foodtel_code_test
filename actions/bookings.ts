@@ -1,6 +1,6 @@
-"use server"
+"use server";
 
-import { BookingForm } from "@/zodSchemas";
+import { BookingForm, BookingFormSchema } from "@/zodSchemas";
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -12,16 +12,27 @@ export async function getBookings() {
 }
 
 export async function addBooking(data: BookingForm) {
-  console.log(data)
-  const response = await prisma.booking.create({
-    data: {
-      bookerName: "Danny",
-      email: "danny@gmail.com",
-      time: new Date(),
-      totalGuests: 3,
-    },
-  });
-  console.log('added booking')
+  try {
+    BookingFormSchema.parse(data);
 
-  revalidatePath("/");
+    //parse time
+    const time = new Date(data.date);
+    const [hour, minute, second] = data.time.split(":");
+    time.setHours(parseInt(hour));
+    time.setMinutes(parseInt(minute));
+    time.setSeconds(parseInt(second));
+
+    await prisma.booking.create({
+      data: {
+        bookerName: data.bookerName,
+        email: data.email,
+        totalGuests: data.totalGuests,
+        time,
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
 }
