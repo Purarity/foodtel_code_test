@@ -1,4 +1,5 @@
 "use client";
+
 import type { Booking } from "@prisma/client";
 import { useRef, useState } from "react";
 
@@ -74,7 +75,7 @@ export default function BookingList({
       <div>Found bookings: {shownBookingsCount.current}</div>
       <div className="flex flex-wrap gap-4 items-center">
         <input
-          className="border w-64 rounded p-1"
+          className="w-64"
           value={filterString}
           onChange={(event) => setFilterString(event.currentTarget.value)}
           placeholder="Filter by name or email..."

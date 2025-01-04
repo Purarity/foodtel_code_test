@@ -1,5 +1,6 @@
 "use server"
 
+import { BookingForm } from "@/zodSchemas";
 import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -10,7 +11,8 @@ export async function getBookings() {
   revalidatePath("/");
 }
 
-export async function addBooking() {
+export async function addBooking(data: BookingForm) {
+  console.log(data)
   const response = await prisma.booking.create({
     data: {
       bookerName: "Danny",
@@ -19,6 +21,7 @@ export async function addBooking() {
       totalGuests: 3,
     },
   });
+  console.log('added booking')
 
   revalidatePath("/");
 }
