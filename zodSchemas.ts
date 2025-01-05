@@ -6,7 +6,7 @@ export const BookingFormSchema = z.object({
   email: z.string().email("Email must be a valid email address"),
   totalGuests: z.coerce
     .number()
-    .min(1, "Party must be at least of one")
+    .min(1)
     .max(
       8,
       `Please contact us at ${process.env.NEXT_PUBLIC_SUPPORT_NUMBER} to book a bigger table`
