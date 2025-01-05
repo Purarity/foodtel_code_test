@@ -3,6 +3,7 @@
 import { BookingForm, BookingFormSchema } from "@/zodSchemas";
 import { Booking, PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 const prisma = new PrismaClient();
 
@@ -38,6 +39,10 @@ export async function addBooking(currentState: unknown, data: FormData) {
       },
     });
   } catch (error) {
+    console.log(error);
     return { success: false };
   }
+  
+  revalidatePath("/admin");
+  redirect("/success");
 }
