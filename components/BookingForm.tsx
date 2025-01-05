@@ -2,7 +2,13 @@
 
 import { addBooking } from "@/actions/bookings";
 import { BookingFormSchema, type BookingForm } from "@/zodSchemas";
-import { ChangeEvent, FormEvent, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  startTransition,
+  useActionState,
+  useState,
+} from "react";
 import { ZodError } from "zod";
 
 export default function BookingForm() {
@@ -16,38 +22,32 @@ export default function BookingForm() {
     }),
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [actionError, submitForm, isPending] = useActionState(addBooking, null);
 
-  async function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    try {
-      //zod only accept time with seconds, we manually add it here so users dont have to
-      const transformedTime = formData.time + ":00";
-      BookingFormSchema.parse({ ...formData, time: transformedTime });
-      setFormErrors({});
+    startTransition(async () => {
+      try {
+        //zod only accept time with seconds, we manually add it here so users dont have to
+        BookingFormSchema.parse({ ...formData, time: formData.time + ":00" });
+        setFormErrors({});
 
-      const response = await addBooking({
-        ...formData,
-        time: transformedTime,
-      });
+        submitForm(new FormData(event.currentTarget));
+      } catch (error) {
+        if (error instanceof ZodError) {
+          const fieldErrors: typeof formErrors = {};
+          error.errors.forEach(
+            (validationError) =>
+              (fieldErrors[validationError.path[0]] = validationError.message)
+          );
+          setFormErrors(fieldErrors);
 
-      if (response.success) {
-        console.log(response);
+          //focus on the first error input
+          document.getElementById(Object.keys(fieldErrors)[0])?.focus();
+        }
       }
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const fieldErrors: typeof formErrors = {};
-        error.errors.forEach(
-          (validationError) =>
-            (fieldErrors[validationError.path[0]] = validationError.message)
-        );
-        setFormErrors(fieldErrors);
-
-        //focus on the first error input
-        document.getElementById(Object.keys(fieldErrors)[0])?.focus();
-        return;
-      }
-    }
+    });
   }
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -82,6 +82,7 @@ export default function BookingForm() {
   return (
     <form
       onSubmit={handleSubmit}
+      action={submitForm}
       className="flex flex-col mx-2 gap-5 items-center w-full"
     >
       <label htmlFor="bookerName" className="w-full">
@@ -154,7 +155,35 @@ export default function BookingForm() {
         </label>
       </div>
 
-      <button className="bg-[#353b39]">Submit</button>
+      <button
+        disabled={isPending}
+        className="bg-[#353b39] text-white rounded-2xl flex items-center justify-center h-8 w-20"
+      >
+        {isPending ? (
+          <svg
+            className="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+        ) : (
+          "Submit"
+        )}
+      </button>
 
       {Object.keys(formErrors).length ? (
         <div className="bg-red-500 text-white p-2 rounded">
@@ -165,6 +194,15 @@ export default function BookingForm() {
           ))}
         </div>
       ) : null}
+
+      {actionError?.success === false && (
+        <div className="bg-red-500 text-white p-2 rounded">
+          <div className="text-center">
+            Something went wrong, please contact us at{" "}
+            {process.env.NEXT_PUBLIC_SUPPORT_NUMBER}
+          </div>
+        </div>
+      )}
     </form>
   );
 }

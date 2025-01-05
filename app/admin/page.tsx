@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import AddBookingButton from "@/components/AddBookingButton";
 import BookingList from "@/components/BookingList";
 
 export default async function Admin() {
@@ -12,7 +11,6 @@ export default async function Admin() {
 
   return (
     <>
-      <AddBookingButton />
       <BookingList bookingList={bookings} />
     </>
   );
