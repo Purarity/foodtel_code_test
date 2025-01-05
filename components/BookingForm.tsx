@@ -54,12 +54,15 @@ export default function BookingForm() {
     const { name, value } = event.currentTarget;
 
     if (name === "date") {
-      setFormData((previous) => ({
-        ...previous,
-        date: new Intl.DateTimeFormat("sv-SE", {
-          dateStyle: "short",
-        }).format(new Date(value)),
-      }));
+      //value can be null when user press the "clear" button
+      if (value) {
+        setFormData((previous) => ({
+          ...previous,
+          date: new Intl.DateTimeFormat("sv-SE", {
+            dateStyle: "short",
+          }).format(new Date(value)),
+        }));
+      }
     } else {
       setFormData((previous) => ({ ...previous, [name]: value }));
     }
@@ -69,9 +72,9 @@ export default function BookingForm() {
     <form
       onSubmit={handleSubmit}
       action={submitForm}
-      className="flex flex-col mx-2 gap-5 items-center w-full"
+      className="flex flex-col px-4 gap-5 items-center w-full"
     >
-      <label htmlFor="bookerName" className="w-full">
+      <label htmlFor="bookerName">
         Name:
         <input
           type="text"
@@ -84,7 +87,7 @@ export default function BookingForm() {
           required
         />
       </label>
-      <label htmlFor="email" className="w-full">
+      <label htmlFor="email">
         Email:
         <input
           type="text"
@@ -97,14 +100,14 @@ export default function BookingForm() {
           required
         />
       </label>
-      <div className="flex justify-center gap-5">
+      <div className="flex flex-wrap justify-center gap-5">
         <label htmlFor="totalGuests">
           Total Guests:
           <input
             type="number"
             inputMode="numeric"
             min={1}
-            className="block w-full"
+            className="block w-24"
             id="totalGuests"
             name="totalGuests"
             placeholder="Total Guests..."
