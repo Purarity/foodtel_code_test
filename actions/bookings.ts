@@ -1,7 +1,7 @@
 "use server";
 
-import { BookingForm, BookingFormSchema } from "@/zodSchemas";
-import { Booking, PrismaClient } from "@prisma/client";
+import { BookingFormSchema } from "@/zodSchemas";
+import { PrismaClient } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -12,23 +12,22 @@ export async function getBookings() {
   revalidatePath("/");
 }
 
-export async function addBooking(currentState: unknown, data: FormData) {
+export async function addBooking(_currentState: unknown, data: FormData) {
   const extractedData = {
-    bookerName: data.get("bookerName"),
-    email: data.get("email"),
+    bookerName: data.get("bookerName") as string,
+    email: data.get("email") as string,
     totalGuests: data.get("totalGuests"),
     date: data.get("date")?.toString() || "",
-    time: (data.get("time") as string) + ":00", //zod time schema
+    time: data.get("time") as string,
   };
-
-  const transformedTime = new Date(extractedData.date);
-  const [hour, minute, second] = extractedData.time.split(":");
-  transformedTime.setHours(parseInt(hour));
-  transformedTime.setMinutes(parseInt(minute));
-  transformedTime.setSeconds(parseInt(second));
 
   try {
     const parsedData = BookingFormSchema.parse(extractedData);
+
+    const transformedTime = new Date(extractedData.date);
+    const [hour, minute] = extractedData.time.split(":");
+    transformedTime.setHours(parseInt(hour));
+    transformedTime.setMinutes(parseInt(minute));
 
     await prisma.booking.create({
       data: {
@@ -40,9 +39,16 @@ export async function addBooking(currentState: unknown, data: FormData) {
     });
   } catch (error) {
     console.log(error);
-    return { success: false };
+
+    // returning old data to preserve the form values
+    return {
+      success: false,
+      data: {
+        ...extractedData,
+      },
+    };
   }
-  
+
   revalidatePath("/admin");
   redirect("/success");
 }

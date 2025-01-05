@@ -1,77 +1,31 @@
 "use client";
 
 import { addBooking } from "@/actions/bookings";
-import { BookingFormSchema, type BookingForm } from "@/zodSchemas";
-import {
-  ChangeEvent,
-  FormEvent,
-  startTransition,
-  useActionState,
-  useState,
-} from "react";
-import { ZodError } from "zod";
+import { BookingFormSchema } from "@/zodSchemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useActionState, useRef } from "react";
+import { useForm } from "react-hook-form";
+
+type BookingFormInputs = {
+  bookerName: string;
+  email: string;
+  totalGuests: number;
+  date: string;
+  time: string;
+};
 
 export default function BookingForm() {
-  const [formData, setFormData] = useState<BookingForm>({
-    bookerName: "",
-    email: "",
-    totalGuests: 2,
-    date: new Date().toLocaleDateString("sv-SE"),
-    time: new Date().toLocaleTimeString("sv-SE", {
-      timeStyle: "short",
-    }),
+  const formRef = useRef<HTMLFormElement>(null!);
+  const { register, handleSubmit, formState } = useForm<BookingFormInputs>({
+    resolver: zodResolver(BookingFormSchema),
   });
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [actionError, submitForm, isPending] = useActionState(addBooking, null);
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    startTransition(async () => {
-      try {
-        //zod only accept time with seconds, we manually add it here so users dont have to
-        BookingFormSchema.parse({ ...formData, time: formData.time + ":00" });
-        setFormErrors({});
-
-        submitForm(new FormData(event.currentTarget));
-      } catch (error) {
-        if (error instanceof ZodError) {
-          const fieldErrors: typeof formErrors = {};
-          error.errors.forEach(
-            (validationError) =>
-              (fieldErrors[validationError.path[0]] = validationError.message)
-          );
-          setFormErrors(fieldErrors);
-
-          //focus on the first error input
-          document.getElementById(Object.keys(fieldErrors)[0])?.focus();
-        }
-      }
-    });
-  }
-
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = event.currentTarget;
-
-    if (name === "date") {
-      //value can be null when user press the "clear" button
-      if (value) {
-        setFormData((previous) => ({
-          ...previous,
-          date: new Intl.DateTimeFormat("sv-SE", {
-            dateStyle: "short",
-          }).format(new Date(value)),
-        }));
-      }
-    } else {
-      setFormData((previous) => ({ ...previous, [name]: value }));
-    }
-  }
+  const [state, submitAction] = useActionState(addBooking, null);
 
   return (
     <form
-      onSubmit={handleSubmit}
-      action={submitForm}
+      ref={formRef}
+      onSubmit={handleSubmit(() => formRef.current.submit())}
+      action={submitAction}
       className="flex flex-col px-4 gap-5 items-center w-full"
     >
       <label htmlFor="bookerName">
@@ -80,10 +34,9 @@ export default function BookingForm() {
           type="text"
           className="block w-full"
           id="bookerName"
-          name="bookerName"
           placeholder="Name..."
-          value={formData.bookerName}
-          onChange={handleChange}
+          {...register("bookerName")}
+          defaultValue={state?.data.bookerName || ""}
           required
         />
       </label>
@@ -93,10 +46,9 @@ export default function BookingForm() {
           type="text"
           className="block w-full"
           id="email"
-          name="email"
           placeholder="Email..."
-          value={formData.email}
-          onChange={handleChange}
+          {...register("email")}
+          defaultValue={state?.data.email || ""}
           required
         />
       </label>
@@ -109,10 +61,9 @@ export default function BookingForm() {
             min={1}
             className="block w-24"
             id="totalGuests"
-            name="totalGuests"
+            defaultValue={2}
             placeholder="Total Guests..."
-            value={formData.totalGuests}
-            onChange={handleChange}
+            {...register("totalGuests")}
             required
           />
         </label>
@@ -122,11 +73,10 @@ export default function BookingForm() {
             type="date"
             className="block w-full"
             id="date"
-            name="date"
-            value={new Intl.DateTimeFormat("sv-SE", {
+            {...register("date")}
+            defaultValue={new Intl.DateTimeFormat("sv-SE", {
               dateStyle: "short",
-            }).format(new Date(formData.date))}
-            onChange={handleChange}
+            }).format(new Date())}
             required
           />
         </label>
@@ -134,21 +84,22 @@ export default function BookingForm() {
           Time:
           <input
             type="time"
+            defaultValue={new Intl.DateTimeFormat("sv-SE", {
+              timeStyle: "short",
+            }).format(new Date())}
             className="block w-full"
             id="time"
-            name="time"
-            value={formData.time}
-            onChange={handleChange}
+            {...register("time")}
             required
           />
         </label>
       </div>
-
       <button
-        disabled={isPending}
+        type="submit"
+        disabled={formState.isSubmitting}
         className="bg-[#353b39] text-white rounded-2xl flex items-center justify-center h-8 w-20"
       >
-        {isPending ? (
+        {formState.isSubmitting ? (
           <svg
             className="animate-spin h-5 w-5 text-white"
             xmlns="http://www.w3.org/2000/svg"
@@ -173,18 +124,19 @@ export default function BookingForm() {
           "Submit"
         )}
       </button>
-
-      {Object.keys(formErrors).length ? (
+      {Object.keys(formState.errors).length ? (
         <div className="bg-red-500 text-white p-2 rounded">
-          {Object.entries(formErrors).map(([name, message]) => (
-            <div className="text-center" key={name}>
-              {message}
-            </div>
-          ))}
+          {Object.values(formState.errors).map((error, index) => {
+            return (
+              <div className="text-center" key={index}>
+                {error.message}
+              </div>
+            );
+          })}
         </div>
       ) : null}
 
-      {actionError?.success === false && (
+      {state?.success === false && (
         <div className="bg-red-500 text-white p-2 rounded">
           <div className="text-center">
             Something went wrong, please contact us at{" "}

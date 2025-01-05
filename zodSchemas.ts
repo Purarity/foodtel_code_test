@@ -1,4 +1,3 @@
-import { env } from "process";
 import { z } from "zod";
 
 export const BookingFormSchema = z.object({
@@ -12,7 +11,15 @@ export const BookingFormSchema = z.object({
       `Please contact us at ${process.env.NEXT_PUBLIC_SUPPORT_NUMBER} to book a bigger table`
     ),
   date: z.string().date(),
-  time: z.string().time(),
+  time: z.preprocess(
+    (input) =>
+      `${
+        (input as string).split(":").length < 3
+          ? (input as string) + ":00"
+          : input
+      }`,
+    z.string().time()
+  ), //automatically add seconds when needed to pass time validation
 });
 
 export type BookingForm = z.infer<typeof BookingFormSchema>;
