@@ -53,29 +53,15 @@ export default function BookingForm() {
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.currentTarget;
 
-    switch (name) {
-      case "date":
-        setFormData((previous) => ({
-          ...previous,
-          date: new Intl.DateTimeFormat("sv-SE", {
-            dateStyle: "short",
-          }).format(new Date(value)),
-        }));
-        break;
-
-      case "totalGuests":
-        const parsedGuestsNumber = parseInt(value);
-        if (!isNaN(parsedGuestsNumber)) {
-          setFormData((previous) => ({
-            ...previous,
-            totalGuests: parsedGuestsNumber,
-          }));
-        }
-        break;
-
-      default:
-        setFormData((previous) => ({ ...previous, [name]: value }));
-        break;
+    if (name === "date") {
+      setFormData((previous) => ({
+        ...previous,
+        date: new Intl.DateTimeFormat("sv-SE", {
+          dateStyle: "short",
+        }).format(new Date(value)),
+      }));
+    } else {
+      setFormData((previous) => ({ ...previous, [name]: value }));
     }
   }
 
@@ -117,7 +103,6 @@ export default function BookingForm() {
           <input
             type="number"
             min={1}
-            max={8}
             className="block w-full"
             id="totalGuests"
             name="totalGuests"
