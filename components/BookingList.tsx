@@ -1,114 +1,98 @@
 "use client";
 import type { Booking } from "@prisma/client";
-import { useRef, useState } from "react";
+import debounce from "lodash-es/debounce";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRef } from "react";
 
 export default function BookingList({
   bookingList,
 }: {
   bookingList: Booking[];
 }) {
-  const [filterString, setFilterString] = useState("");
-  const [filterByDates, setFilterByDates] = useState(false);
-  const [fromDate, setFromDate] = useState(new Date().toLocaleDateString());
-  const [toDate, setToDate] = useState(new Date().toLocaleDateString());
-  const shownBookingsCount = useRef(bookingList.length);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const currentPath = usePathname();
+  const dateFilterCheckboxRef = useRef<HTMLInputElement>(null!);
+  const fromDatesRef = useRef<HTMLInputElement>(null!);
+  const toDatesRef = useRef<HTMLInputElement>(null!);
 
-  function renderTableBody(bookings: Booking[]) {
-    let filteredList: Booking[] = bookings;
+  const debounceParamsChange: (filters: string[], values: string[]) => void =
+    debounce(
+      (filters: string[], values: string[]) => {
+        const newSearchParams = new URLSearchParams(searchParams);
 
-    if (filterString) {
-      filteredList = filteredList.filter(
-        (booking) =>
-          booking.bookerName
-            .toLowerCase()
-            .includes(filterString.toLowerCase()) ||
-          booking.email.toLowerCase().includes(filterString.toLowerCase())
-      );
-    }
+        for (let i = 0; i < filters.length; i++) {
+          if (values.length && values[i]) {
+            newSearchParams.set(filters[i], values[i]);
+          } else {
+            newSearchParams.delete(filters[i]);
+          }
+        }
 
-    if (filterByDates) {
-      filteredList = filteredList.filter((booking) => {
-        const bookingTime = booking.time.getTime();
-        return (
-          bookingTime >= new Date(fromDate).getTime() &&
-          bookingTime < new Date(toDate).getTime() + 86400000
-        );
-      });
-    }
-
-    shownBookingsCount.current = filteredList.length;
-
-    return (
-      <tbody>
-        {filteredList.length ? (
-          filteredList.map((booking) => (
-            <tr
-              key={booking.id}
-              className="even:bg-gray-100 odd:bg-white h-8 hover:brightness-90"
-            >
-              <td className="px-4">{booking.bookerName}</td>
-              <td className="px-4">{booking.email}</td>
-              <td className="px-4">{booking.totalGuests}</td>
-              <td className="px-4">
-                {new Intl.DateTimeFormat("sv-SE", {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                }).format(booking.time)}
-              </td>
-            </tr>
-          ))
-        ) : (
-          <tr className="h-8">
-            <td className="px-4" />
-            <td className="px-4" />
-            <td className="px-4" />
-            <td className="px-4" />
-          </tr>
-        )}
-      </tbody>
+        router.replace(`${currentPath}?${newSearchParams.toString()}`);
+      },
+      200,
+      { trailing: true }
     );
-  }
 
   return (
     <div className="p-4 space-y-4">
-      <div>Shown bookings : {shownBookingsCount.current}</div>
+      <div>Shown bookings : {bookingList.length}</div>
       <div className="flex flex-wrap gap-4 items-center">
         <input
           className="border w-64 rounded p-1"
-          value={filterString}
-          onChange={(event) => setFilterString(event.currentTarget.value)}
+          onChange={(event) =>
+            debounceParamsChange(["filterString"], [event.currentTarget.value])
+          }
           placeholder="Filter by name or email..."
         />
         <label htmlFor="filterByDate">
           Filter by dates:
           <input
+            ref={dateFilterCheckboxRef}
             type="checkbox"
             name="filterByDate"
             id="filterByDate"
-            checked={filterByDates}
-            onChange={(event) => setFilterByDates(event.currentTarget.checked)}
+            onChange={(event) => {
+              if (event.currentTarget.checked) {
+                debounceParamsChange(
+                  ["fromDate", "toDate"],
+                  [fromDatesRef.current.value, toDatesRef.current.value]
+                );
+              } else {
+                debounceParamsChange(["fromDate", "toDate"], []);
+              }
+            }}
           />
         </label>
         <label htmlFor="fromDate">
           From:
           <input
+            ref={fromDatesRef}
             type="date"
             name="fromDate"
             id="fromDate"
             className="brightness-90 rounded px-1"
-            value={fromDate}
-            onChange={(event) => setFromDate(event.currentTarget.value)}
+            defaultValue={new Date().toLocaleDateString()}
+            onChange={(event) =>
+              dateFilterCheckboxRef.current.checked &&
+              debounceParamsChange(["fromDate"], [event.currentTarget.value])
+            }
           />
         </label>
         <label htmlFor="toDate">
           To:
           <input
+            ref={toDatesRef}
             type="date"
             name="toDate"
             id="toDate"
             className="brightness-90 rounded px-1"
-            value={toDate}
-            onChange={(event) => setToDate(event.currentTarget.value)}
+            defaultValue={new Date().toLocaleDateString()}
+            onChange={(event) =>
+              dateFilterCheckboxRef.current.checked &&
+              debounceParamsChange(["toDate"], [event.currentTarget.value])
+            }
           />
         </label>
       </div>
@@ -121,7 +105,33 @@ export default function BookingList({
             <th>Time</th>
           </tr>
         </thead>
-        {renderTableBody(bookingList)}
+        <tbody>
+          {bookingList.length ? (
+            bookingList.map((booking) => (
+              <tr
+                key={booking.id}
+                className="even:bg-gray-100 odd:bg-white h-8 hover:brightness-90"
+              >
+                <td className="px-4">{booking.bookerName}</td>
+                <td className="px-4">{booking.email}</td>
+                <td className="px-4">{booking.totalGuests}</td>
+                <td className="px-4">
+                  {new Intl.DateTimeFormat("sv-SE", {
+                    timeStyle: "short",
+                    dateStyle: "short",
+                  }).format(booking.time)}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr className="h-8">
+              <td className="px-4" />
+              <td className="px-4" />
+              <td className="px-4" />
+              <td className="px-4" />
+            </tr>
+          )}
+        </tbody>
       </table>
     </div>
   );

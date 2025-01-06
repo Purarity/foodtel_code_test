@@ -7,11 +7,6 @@ import { redirect } from "next/navigation";
 
 const prisma = new PrismaClient();
 
-export async function getBookings() {
-  await prisma.booking.findMany();
-  revalidatePath("/");
-}
-
 export async function addBooking(_currentState: unknown, data: FormData) {
   const extractedData = {
     bookerName: data.get("bookerName") as string,
