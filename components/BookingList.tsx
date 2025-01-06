@@ -1,5 +1,4 @@
 "use client";
-
 import type { Booking } from "@prisma/client";
 import { useRef, useState } from "react";
 
@@ -15,28 +14,28 @@ export default function BookingList({
   const shownBookingsCount = useRef(bookingList.length);
 
   function renderTableBody(bookings: Booking[]) {
-    const filteredList = bookings.filter((booking) => {
-      if (filterString) {
-        if (
+    let filteredList: Booking[] = bookings;
+
+    if (filterString) {
+      filteredList = filteredList.filter(
+        (booking) =>
           booking.bookerName
             .toLowerCase()
             .includes(filterString.toLowerCase()) ||
           booking.email.toLowerCase().includes(filterString.toLowerCase())
-        ) {
-          return booking;
-        }
-      } else if (filterByDates) {
+      );
+    }
+
+    if (filterByDates) {
+      filteredList = filteredList.filter((booking) => {
         const bookingTime = booking.time.getTime();
-        if (
+        return (
           bookingTime >= new Date(fromDate).getTime() &&
-          bookingTime < new Date(toDate).getTime() + 86400000 //before the next day
-        ) {
-          return booking;
-        }
-      } else {
-        return booking;
-      }
-    });
+          bookingTime < new Date(toDate).getTime() + 86400000
+        );
+      });
+    }
+
     shownBookingsCount.current = filteredList.length;
 
     return (
@@ -72,10 +71,10 @@ export default function BookingList({
 
   return (
     <div className="p-4 space-y-4">
-      <div>Found bookings: {shownBookingsCount.current}</div>
+      <div>Shown bookings : {shownBookingsCount.current}</div>
       <div className="flex flex-wrap gap-4 items-center">
         <input
-          className="w-64"
+          className="border w-64 rounded p-1"
           value={filterString}
           onChange={(event) => setFilterString(event.currentTarget.value)}
           placeholder="Filter by name or email..."
