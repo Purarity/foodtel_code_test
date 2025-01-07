@@ -1,6 +1,6 @@
 import { ITEMS_PER_PAGE } from "./constants";
 
-export default function Popover({
+export default function Pagination({
   page,
   bookingCount,
   paramsChange,

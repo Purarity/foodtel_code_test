@@ -1,22 +1,28 @@
 import { Booking } from "@prisma/client";
-import { Dispatch, SetStateAction } from "react";
+import { useRef, useState } from "react";
+import Popover from "../Popover";
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 
 export default function BookingListTable({
   bookingList,
-  setSelectedBooking,
 }: {
   bookingList: Booking[];
-  setSelectedBooking: Dispatch<SetStateAction<Booking | undefined>>;
 }) {
+  const [selectedBooking, setSelectedBooking] = useState<Booking>();
+  const popoverRef = useRef<HTMLDivElement>(null!);
+
   return (
-    <table className="table-fixed rounded-lg w-full text-center overflow-hidden">
-      <TableHeader />
-      <TableBody
-        bookingList={bookingList}
-        setSelectedBooking={setSelectedBooking}
-      />
-    </table>
+    <>
+      <Popover booking={selectedBooking} popoverRef={popoverRef} />
+
+      <table className="table-fixed rounded-lg w-full text-center overflow-hidden">
+        <TableHeader />
+        <TableBody
+          bookingList={bookingList}
+          setSelectedBooking={setSelectedBooking}
+        />
+      </table>
+    </>
   );
 }

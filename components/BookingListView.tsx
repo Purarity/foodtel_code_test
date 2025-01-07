@@ -2,12 +2,11 @@
 import type { Booking } from "@prisma/client";
 import debounce, { DebounceSettings } from "lodash-es/debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import BookingListTable from "./BookingListTable/BookingListTable";
 import Pagination from "./Pagination";
-import Popover from "./Popover";
 
-export default function BookingList({
+export default function BookingListView({
   bookingList,
   bookingCount,
   page,
@@ -22,8 +21,6 @@ export default function BookingList({
   const dateFilterCheckboxRef = useRef<HTMLInputElement>(null!);
   const fromDatesRef = useRef<HTMLInputElement>(null!);
   const toDatesRef = useRef<HTMLInputElement>(null!);
-  const [selectedBooking, setSelectedBooking] = useState<Booking>();
-  const popoverRef = useRef<HTMLDivElement>(null!);
 
   function paramsChange(filters: string[], values: string[]) {
     const newSearchParams = new URLSearchParams(searchParams);
@@ -47,7 +44,6 @@ export default function BookingList({
 
   return (
     <>
-      <Popover booking={selectedBooking} popoverRef={popoverRef} />
       <div className="space-y-4 p-4">
         <div>Found bookings: {bookingCount}</div>
         <div className="flex flex-wrap justify-center items-center gap-4">
@@ -131,10 +127,7 @@ export default function BookingList({
           paramsChange={paramsChange}
         />
 
-        <BookingListTable
-          bookingList={bookingList}
-          setSelectedBooking={setSelectedBooking}
-        />
+        <BookingListTable bookingList={bookingList} />
       </div>
     </>
   );

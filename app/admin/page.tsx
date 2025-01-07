@@ -1,4 +1,4 @@
-import BookingList from "@/components/BookingList";
+import BookingListView from "@/components/BookingListView";
 import { ITEMS_PER_PAGE } from "@/components/constants";
 import { Prisma, PrismaClient } from "@prisma/client";
 
@@ -74,7 +74,7 @@ export default async function Admin({
   }
 
   return (
-    <BookingList
+    <BookingListView
       bookingList={bookings}
       page={updatePageNumber || parsedPageNumber}
       bookingCount={bookingCount}
