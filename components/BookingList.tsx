@@ -206,7 +206,7 @@ export default function BookingList({
           Next
         </button>
       </div>
-      {/* <table className="table-fixed rounded-lg w-full text-center overflow-hidden">
+      <table className="table-fixed rounded-lg w-full text-center overflow-hidden">
         <thead className="bg-primary-1 text-white">
           <tr>
             <th>Name</th>
@@ -223,7 +223,7 @@ export default function BookingList({
                   key={booking.id}
                   className="hover:brightness-90 odd:bg-white even:bg-gray-100 h-8"
                 >
-                  <td className="break-words">{booking.bookerName}</td>
+                  {/* <td className="break-words">{booking.bookerName}</td>
                   <td className="break-words">{booking.email}</td>
                   <td>{booking.totalGuests}</td>
                   <td>
@@ -231,7 +231,7 @@ export default function BookingList({
                       timeStyle: "short",
                       dateStyle: "short",
                     }).format(booking.time)}
-                  </td>
+                  </td> */}
                   <td>
                     <button
                       popoverTarget="archive-check"
@@ -258,7 +258,7 @@ export default function BookingList({
               ))
             : null}
         </tbody>
-      </table> */}
+      </table>
     </div>
   );
 }
