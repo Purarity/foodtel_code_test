@@ -24,6 +24,8 @@ export default async function Admin({
       OR: [
         {
           bookerName: { contains: params.filterString, mode: "insensitive" },
+        },
+        {
           email: { contains: params.filterString, mode: "insensitive" },
         },
       ],
