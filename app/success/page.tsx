@@ -16,7 +16,8 @@ export default async function Success() {
         />
       </svg>
       <h1>
-        Thank you for booking at Foodtel! We're looking forward to meeting you.
+        Thank you for booking at Foodtel! We&apos;re looking forward to meeting
+        you.
       </h1>
       <iframe
         className="w-full h-[20rem]"
