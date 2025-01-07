@@ -42,8 +42,6 @@ The admin can navigate between table pages by pressing the "Prev" and "Next" but
 
 ## Bugs
 
-When initially navigating to the /admin page, a #418 (hydration error) error will display in the console. This only exists in current production, this is caused by the use of new Date() function, its value isn't consistent across locations, so there can be a mismatch when it runs on the server and on the client.
-
-The date picker is initially empty on Chromium browsers because it doesn't return the standardized format of "yyyy-mm-dd", it returns "d-m-yyyy".
+When initially navigating to the /admin page, a #418 (hydration error) error will display in the console. This currently exists because when users make their booking, the time is saved in their locale, which does not necessarily is the same as the server, this can be mitigated by standardized the timezone before saving to the database.
 
 The app is fully functional, but the UI can be better.
