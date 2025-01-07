@@ -228,9 +228,9 @@ export default function BookingList({
                   <td>{booking.totalGuests}</td>
                   <td>
                     {new Intl.DateTimeFormat("sv-SE", {
-                      timeStyle: "short",
-                      dateStyle: "short",
-                    }).format(new Date())}
+                      // timeStyle: "short",
+                      // dateStyle: "short",
+                    }).format(booking.time)}
                   </td>
                   <td>
                     <button
