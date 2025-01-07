@@ -19,4 +19,5 @@ model Booking {
   email       String
   totalGuests Int
   time        DateTime
+  archived    Boolean  @default(false)
 }

@@ -7,6 +7,23 @@ import { redirect } from "next/navigation";
 
 const prisma = new PrismaClient();
 
+export async function archiveBooking(id: number) {
+  console.log(id);
+  try {
+    await prisma.booking.update({
+      where: {
+        id,
+      },
+      data: {
+        archived: true,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+  revalidatePath("/admin");
+}
+
 export async function addBooking(_currentState: unknown, data: FormData) {
   const extractedData = {
     bookerName: data.get("bookerName") as string,

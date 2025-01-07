@@ -16,7 +16,7 @@ export default async function Admin({
   const prisma = new PrismaClient();
 
   const whereQuery: Prisma.BookingWhereInput = {
-    ...(Object.keys(searchParams).includes("filterString") && {
+    ...(Object.keys(params).includes("filterString") && {
       OR: [
         {
           bookerName: { contains: params.filterString, mode: "insensitive" },
@@ -24,8 +24,8 @@ export default async function Admin({
         },
       ],
     }),
-    ...(Object.keys(searchParams).includes("fromDate") &&
-      Object.keys(searchParams).includes("toDate") && {
+    ...(Object.keys(params).includes("fromDate") &&
+      Object.keys(params).includes("toDate") && {
         time: {
           gte: new Date(params.fromDate!),
           lt: new Date(
@@ -38,6 +38,7 @@ export default async function Admin({
   const bookings = await prisma.booking.findMany({
     where: {
       ...whereQuery,
+      archived: false,
     },
     orderBy: {
       time: "desc",

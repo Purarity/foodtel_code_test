@@ -9,3 +9,7 @@ body {
 input {
   @apply border rounded p-1;
 }
+
+.popover::backdrop {
+  @apply backdrop-blur-sm;
+}
