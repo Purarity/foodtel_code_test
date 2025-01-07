@@ -52,7 +52,7 @@ export default function BookingList({
       <Popover booking={selectedBooking} popoverRef={popoverRef} />
       <div className="space-y-4 p-4 h-full">
         <div>Found bookings: {bookingCount}</div>
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap justify-center items-center gap-4">
           <input
             className="p-1 border rounded w-64"
             defaultValue={searchParams.get("filterString") || ""}
@@ -73,58 +73,61 @@ export default function BookingList({
               id="filterByDate"
               onChange={(event) => {
                 if (event.currentTarget.checked) {
-                  debounceParamsChange(
+                  paramsChange(
                     ["fromDate", "toDate"],
                     [fromDatesRef.current.value, toDatesRef.current.value]
                   );
                 } else {
-                  debounceParamsChange(["fromDate", "toDate"], []);
+                  paramsChange(["fromDate", "toDate"], []);
                 }
               }}
             />
           </label>
-          <label htmlFor="fromDate">
-            From:
-            <input
-              ref={fromDatesRef}
-              type="date"
-              name="fromDate"
-              id="fromDate"
-              className="brightness-90 px-1 rounded"
-              defaultValue={
-                searchParams.get("fromDate") ||
-                new Intl.DateTimeFormat("sv-SE", {
-                  dateStyle: "short",
-                }).format(new Date())
-              }
-              onChange={(event) =>
-                dateFilterCheckboxRef.current.checked &&
-                debounceParamsChange(["fromDate"], [event.currentTarget.value])
-              }
-            />
-          </label>
-          <label htmlFor="toDate">
-            To:
-            <input
-              ref={toDatesRef}
-              type="date"
-              name="toDate"
-              id="toDate"
-              className="brightness-90 px-1 rounded"
-              defaultValue={
-                searchParams.get("toDate") ||
-                new Intl.DateTimeFormat("sv-SE", {
-                  dateStyle: "short",
-                }).format(new Date())
-              }
-              onChange={(event) =>
-                dateFilterCheckboxRef.current.checked &&
-                debounceParamsChange(["toDate"], [event.currentTarget.value])
-              }
-            />
-          </label>
+          <div className="md:block flex flex-col flex-wrap items-center gap-4">
+            <label htmlFor="fromDate">
+              From:
+              <input
+                ref={fromDatesRef}
+                type="date"
+                name="fromDate"
+                id="fromDate"
+                className="brightness-90 px-1 rounded"
+                defaultValue={
+                  searchParams.get("fromDate") ||
+                  new Intl.DateTimeFormat("sv-SE", {
+                    dateStyle: "short",
+                  }).format(new Date())
+                }
+                onChange={(event) =>
+                  dateFilterCheckboxRef.current.checked &&
+                  paramsChange(["fromDate"], [event.currentTarget.value])
+                }
+              />
+            </label>
+            <label className="md:ml-6" htmlFor="toDate">
+              To:
+              <input
+                ref={toDatesRef}
+                type="date"
+                name="toDate"
+                id="toDate"
+                className="brightness-90 px-1 rounded"
+                defaultValue={
+                  searchParams.get("toDate") ||
+                  new Intl.DateTimeFormat("sv-SE", {
+                    dateStyle: "short",
+                  }).format(new Date())
+                }
+                onChange={(event) =>
+                  dateFilterCheckboxRef.current.checked &&
+                  paramsChange(["toDate"], [event.currentTarget.value])
+                }
+              />
+            </label>
+          </div>
         </div>
 
+        {/* Pagination */}
         <div className="text-center">
           <button
             disabled={!canGoPreviousPage}
@@ -147,6 +150,7 @@ export default function BookingList({
             Next
           </button>
         </div>
+
         <table className="table-fixed rounded-lg w-full text-center overflow-hidden">
           <thead className="bg-primary-1 text-white">
             <tr>
