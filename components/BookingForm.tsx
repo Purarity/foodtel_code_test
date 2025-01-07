@@ -26,7 +26,7 @@ export default function BookingForm() {
       ref={formRef}
       onSubmit={handleSubmit(() => formRef.current.submit())}
       action={submitAction}
-      className="flex flex-col px-4 gap-5 items-center w-full"
+      className="flex flex-col items-center gap-5 bg-white mx-auto p-4 rounded w-[90%] md:w-full max-w-[30rem] md:max-w-full"
     >
       <label htmlFor="bookerName">
         Name:
@@ -97,11 +97,11 @@ export default function BookingForm() {
       <button
         type="submit"
         disabled={formState.isSubmitting}
-        className="bg-[#353b39] text-white rounded-2xl flex items-center justify-center h-8 w-20"
+        className="flex justify-center items-center bg-[#353b39] rounded-2xl w-20 h-8 text-white"
       >
         {formState.isSubmitting ? (
           <svg
-            className="animate-spin h-5 w-5 text-white"
+            className="w-5 h-5 text-white animate-spin"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -124,26 +124,36 @@ export default function BookingForm() {
           "Submit"
         )}
       </button>
-      {Object.keys(formState.errors).length ? (
-        <div className="bg-red-500 text-white p-2 rounded">
-          {Object.values(formState.errors).map((error, index) => {
-            return (
-              <div className="text-center" key={index}>
-                {error.message}
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
 
-      {state?.success === false && (
-        <div className="bg-red-500 text-white p-2 rounded">
-          <div className="text-center">
-            Something went wrong, please contact us at{" "}
-            {process.env.NEXT_PUBLIC_SUPPORT_NUMBER}
+      {/* Errors display */}
+      <div
+        className={`${
+          Object.keys(formState.errors).length ? "max-h-40" : "max-h-0"
+        }  transition-all duration-500 ease-in-out overflow-hidden`}
+      >
+        {Object.keys(formState.errors).length ? (
+          <div className="bg-red-500 p-2 rounded text-white">
+            {Object.values(formState.errors).map((error, index) => {
+              return (
+                <div className="text-center" key={index}>
+                  {error.message}
+                </div>
+              );
+            })}
           </div>
-        </div>
-      )}
+        ) : (
+          <div />
+        )}
+
+        {state?.success === false && (
+          <div className="bg-red-500 p-2 rounded text-white">
+            <div className="text-center">
+              Something went wrong, please contact us at{" "}
+              {process.env.NEXT_PUBLIC_SUPPORT_NUMBER}
+            </div>
+          </div>
+        )}
+      </div>
     </form>
   );
 }

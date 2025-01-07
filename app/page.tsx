@@ -7,17 +7,17 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div className="md:flex h-screen">
-      <div className="h-full text-center flex flex-col md:w-1/2 z-10">
-        <h1 className="text-5xl font-bold text-center mt-24 mb-16">
+      <div className="z-10 flex flex-col md:w-1/2 h-full text-center">
+        <h1 className="mt-24 mb-16 font-bold text-5xl text-center">
           Foodtel Booking
         </h1>
         <BookingForm />
       </div>
-      <div className="hidden md:flex w-1/2 overflow-hidden">
+      <div className="top-0 -z-10 md:static absolute md:flex md:w-1/2">
         <Image
           src={PrismaBuilding}
           alt="building"
-          className="object-none md:scale-[1.5]"
+          className="h-screen object-cover"
         />
       </div>
     </div>
