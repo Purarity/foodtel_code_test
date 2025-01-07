@@ -1,7 +1,7 @@
 "use client";
 import { archiveBooking } from "@/actions/bookings";
 import type { Booking } from "@prisma/client";
-import debounce from "lodash-es/debounce";
+import debounce, { DebounceSettings } from "lodash-es/debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 
@@ -27,24 +27,25 @@ export default function BookingList({
   const canGoPreviousPage = page !== 1;
   const canGoNextPage = ITEMS_PER_PAGE * page < bookingCount;
 
-  const debounceParamsChange: (filters: string[], values: string[]) => void =
-    debounce(
-      (filters: string[], values: string[]) => {
-        const newSearchParams = new URLSearchParams(searchParams);
+  function paramsChange(filters: string[], values: string[]) {
+    const newSearchParams = new URLSearchParams(searchParams);
 
-        for (let i = 0; i < filters.length; i++) {
-          if (values.length && values[i]) {
-            newSearchParams.set(filters[i], values[i]);
-          } else {
-            newSearchParams.delete(filters[i]);
-          }
-        }
+    for (let i = 0; i < filters.length; i++) {
+      if (values.length && values[i]) {
+        newSearchParams.set(filters[i], values[i]);
+      } else {
+        newSearchParams.delete(filters[i]);
+      }
+    }
 
-        router.replace(`${currentPath}?${newSearchParams.toString()}`);
-      },
-      200,
-      { trailing: true }
-    );
+    router.replace(`${currentPath}?${newSearchParams.toString()}`);
+  }
+
+  const debounceParamsChange: (
+    filters: string[],
+    values: string[],
+    options?: DebounceSettings
+  ) => void = debounce(paramsChange, 200, { trailing: true });
 
   return (
     <div className="p-4 space-y-4">
@@ -154,8 +155,7 @@ export default function BookingList({
           disabled={!canGoPreviousPage}
           className="min-[200px]:inline border px-2 rounded bg-primary-1 text-white disabled:opacity-20"
           onClick={() =>
-            canGoPreviousPage &&
-            debounceParamsChange(["page"], [(page - 1).toString()])
+            canGoPreviousPage && paramsChange(["page"], [(page - 1).toString()])
           }
         >
           Prev
@@ -165,8 +165,7 @@ export default function BookingList({
           className="border px-2 rounded bg-primary-1 text-white disabled:opacity-20"
           disabled={!canGoNextPage}
           onClick={() =>
-            canGoNextPage &&
-            debounceParamsChange(["page"], [(page + 1).toString()])
+            canGoNextPage && paramsChange(["page"], [(page + 1).toString()])
           }
         >
           Next
