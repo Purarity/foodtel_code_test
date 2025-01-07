@@ -7,8 +7,7 @@ Both the database and server functions are executed from Vercel's fra1 region.
 Tailwind CSS is used for CSS stylings.
 React Hook Form is used for the main form for performance and ease of use.
 Pagination and filtering are done from the server, lodash-es/debounce is used on the client to prevent sending too many requests at once to the server.
-Popover API is used when a user wants to archive a booking. There is a bug with the popover sometimes(?) not hiding itself on Safari on iOS.
-but is being [fixed](https://bugs.webkit.org/show_bug.cgi?id=267688).
+Popover API is used when a user wants to archive a booking.
 
 ## Getting Started
 
@@ -42,6 +41,8 @@ The admin can navigate between table pages by pressing the "Prev" and "Next" but
 
 ## Bugs
 
-When initially navigating to the /admin page, a #418 (hydration error) error will display in the console. This currently exists because when users make their booking, the time is saved in their locale, which does not necessarily is the same as the server, this can be mitigated by standardized the timezone before saving to the database.
+When initially navigating to the /admin page, a #418 (hydration error) error will display in the console. This currently exists because when users make their booking, the time is saved in their locale, which does not necessarily is the same as the server, this can be mitigated by standardizing the timezone before saving to the database.
 
 The app is fully functional, but the UI can be better.
+
+There is a bug with the popover sometimes(?) not hiding itself on Safari on iOS. But is being [fixed](https://bugs.webkit.org/show_bug.cgi?id=267688).

@@ -11,5 +11,5 @@ input {
 }
 
 .popover::backdrop {
-  @apply backdrop-blur-sm;
+  @apply brightness-50 backdrop-blur-sm;
 }
