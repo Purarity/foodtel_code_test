@@ -231,7 +231,7 @@ export default function BookingList({
                       timeStyle: "short",
                     }).format(booking.time)}{" "} */}
                     {new Intl.DateTimeFormat("en-GB", {
-                      timeStyle: "short",
+                      dateStyle: "short",
                     }).format(booking.time)}
                   </td>
                   <td>
