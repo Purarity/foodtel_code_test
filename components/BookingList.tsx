@@ -48,13 +48,13 @@ export default function BookingList({
   ) => void = debounce(paramsChange, 200, { trailing: true });
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="space-y-4 p-4">
       {/* Popover */}
       <div
         ref={archivePopOverRef}
         popover="auto"
         id="archive-check"
-        className="popover p-4 rounded"
+        className="p-4 rounded popover"
       >
         <div>Archive this booking?</div>
         <div className="text-start">
@@ -77,23 +77,23 @@ export default function BookingList({
                 archivePopOverRef.current.hidePopover();
               }
             }}
-            className="border-2 border-transparent rounded bg-red-500 text-white px-2 uppercase"
+            className="border-2 bg-red-500 px-2 border-transparent rounded text-white uppercase"
           >
             Yes
           </button>
           <button
             popoverTarget="archive-check"
             popoverTargetAction="hide"
-            className="ml-5 border-2 rounded px-2 uppercase"
+            className="border-2 ml-5 px-2 rounded uppercase"
           >
             No
           </button>
         </div>
       </div>
       <div>Found bookings : {bookingCount}</div>
-      <div className="flex flex-wrap gap-4 items-center">
+      <div className="flex flex-wrap items-center gap-4">
         <input
-          className="border w-64 rounded p-1"
+          className="p-1 border rounded w-64"
           defaultValue={searchParams.get("filterString") || ""}
           onChange={(event) =>
             debounceParamsChange(["filterString"], [event.currentTarget.value])
@@ -126,9 +126,12 @@ export default function BookingList({
             type="date"
             name="fromDate"
             id="fromDate"
-            className="brightness-90 rounded px-1"
+            className="brightness-90 px-1 rounded"
             defaultValue={
-              searchParams.get("fromDate") || new Date().toLocaleDateString()
+              searchParams.get("fromDate") ||
+              new Intl.DateTimeFormat("sv-SE", {
+                dateStyle: "short",
+              }).format(new Date())
             }
             onChange={(event) =>
               dateFilterCheckboxRef.current.checked &&
@@ -143,9 +146,12 @@ export default function BookingList({
             type="date"
             name="toDate"
             id="toDate"
-            className="brightness-90 rounded px-1"
+            className="brightness-90 px-1 rounded"
             defaultValue={
-              searchParams.get("toDate") || new Date().toLocaleDateString()
+              searchParams.get("toDate") ||
+              new Intl.DateTimeFormat("sv-SE", {
+                dateStyle: "short",
+              }).format(new Date())
             }
             onChange={(event) =>
               dateFilterCheckboxRef.current.checked &&
@@ -158,7 +164,7 @@ export default function BookingList({
       <div className="text-center">
         <button
           disabled={!canGoPreviousPage}
-          className="min-[200px]:inline border px-2 rounded bg-primary-1 text-white disabled:opacity-20"
+          className="min-[200px]:inline bg-primary-1 disabled:opacity-20 px-2 border rounded text-white"
           onClick={() =>
             canGoPreviousPage && paramsChange(["page"], [(page - 1).toString()])
           }
@@ -167,7 +173,7 @@ export default function BookingList({
         </button>
         <div className="inline-block mx-4">Current page: {page}</div>
         <button
-          className="border px-2 rounded bg-primary-1 text-white disabled:opacity-20"
+          className="bg-primary-1 disabled:opacity-20 px-2 border rounded text-white"
           disabled={!canGoNextPage}
           onClick={() =>
             canGoNextPage && paramsChange(["page"], [(page + 1).toString()])
@@ -176,7 +182,7 @@ export default function BookingList({
           Next
         </button>
       </div>
-      <table className="table-fixed overflow-hidden w-full text-center rounded-lg">
+      <table className="table-fixed rounded-lg w-full text-center overflow-hidden">
         <thead className="bg-primary-1 text-white">
           <tr>
             <th>Name</th>
@@ -191,7 +197,7 @@ export default function BookingList({
             ? bookingList.map((booking) => (
                 <tr
                   key={booking.id}
-                  className="even:bg-gray-100 odd:bg-white h-8 hover:brightness-90"
+                  className="hover:brightness-90 odd:bg-white even:bg-gray-100 h-8"
                 >
                   <td className="break-words">{booking.bookerName}</td>
                   <td className="break-words">{booking.email}</td>
