@@ -228,8 +228,10 @@ export default function BookingList({
                   <td>{booking.totalGuests}</td>
                   <td>
                     {new Intl.DateTimeFormat("en-GB", {
-                      dateStyle: "short",
                       timeStyle: "short",
+                    }).format(booking.time)}{" "}
+                    {new Intl.DateTimeFormat("sv-SE", {
+                      dateStyle: "short",
                     }).format(booking.time)}
                   </td>
                   <td>
