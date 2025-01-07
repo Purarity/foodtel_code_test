@@ -94,6 +94,7 @@ export default function BookingList({
       <div className="flex flex-wrap gap-4 items-center">
         <input
           className="border w-64 rounded p-1"
+          defaultValue={searchParams.get("filterString") || ""}
           onChange={(event) =>
             debounceParamsChange(["filterString"], [event.currentTarget.value])
           }
@@ -126,7 +127,9 @@ export default function BookingList({
             name="fromDate"
             id="fromDate"
             className="brightness-90 rounded px-1"
-            defaultValue={new Date().toLocaleDateString()}
+            defaultValue={
+              searchParams.get("fromDate") || new Date().toLocaleDateString()
+            }
             onChange={(event) =>
               dateFilterCheckboxRef.current.checked &&
               debounceParamsChange(["fromDate"], [event.currentTarget.value])
@@ -141,7 +144,9 @@ export default function BookingList({
             name="toDate"
             id="toDate"
             className="brightness-90 rounded px-1"
-            defaultValue={new Date().toLocaleDateString()}
+            defaultValue={
+              searchParams.get("toDate") || new Date().toLocaleDateString()
+            }
             onChange={(event) =>
               dateFilterCheckboxRef.current.checked &&
               debounceParamsChange(["toDate"], [event.currentTarget.value])
