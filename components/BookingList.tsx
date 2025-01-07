@@ -226,12 +226,12 @@ export default function BookingList({
                   <td className="break-words">{booking.bookerName}</td>
                   <td className="break-words">{booking.email}</td>
                   <td>{booking.totalGuests}</td>
-                  {/* <td>
+                  <td>
                     {new Intl.DateTimeFormat("sv-SE", {
                       timeStyle: "short",
                       dateStyle: "short",
                     }).format(booking.time)}
-                  </td> */}
+                  </td>
                   <td>
                     <button
                       popoverTarget="archive-check"
