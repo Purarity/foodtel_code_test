@@ -8,7 +8,7 @@ type BookingListFilters = Partial<{
   page: string;
 }>;
 
-export const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 10;
 
 export default async function Admin({
   searchParams,
@@ -77,6 +77,7 @@ export default async function Admin({
       bookingList={bookings}
       page={updatePageNumber || parsedPageNumber}
       bookingCount={bookingCount}
+      ITEMS_PER_PAGE={ITEMS_PER_PAGE}
     />
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 import { archiveBooking } from "@/actions/bookings";
-import { ITEMS_PER_PAGE } from "@/app/admin/page";
 import type { Booking } from "@prisma/client";
 import debounce from "lodash-es/debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -10,10 +9,12 @@ export default function BookingList({
   bookingList,
   bookingCount,
   page,
+  ITEMS_PER_PAGE,
 }: {
   bookingList: Booking[];
   bookingCount: number;
   page: number;
+  ITEMS_PER_PAGE: number;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
