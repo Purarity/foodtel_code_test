@@ -230,7 +230,7 @@ export default function BookingList({
                     {new Intl.DateTimeFormat(undefined, {
                       timeStyle: "short",
                       dateStyle: "short",
-                    }).format(booking.time)}
+                    }).format(new Date(booking.time))}
                   </td>
                   <td>
                     <button
