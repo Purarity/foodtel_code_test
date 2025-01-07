@@ -1,5 +1,6 @@
 "use client";
 import { archiveBooking } from "@/actions/bookings";
+import { ITEMS_PER_PAGE } from "@/app/admin/page";
 import type { Booking } from "@prisma/client";
 import debounce from "lodash-es/debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -7,8 +8,12 @@ import { useRef, useState } from "react";
 
 export default function BookingList({
   bookingList,
+  bookingCount,
+  page,
 }: {
   bookingList: Booking[];
+  bookingCount: number;
+  page: number;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -18,6 +23,8 @@ export default function BookingList({
   const toDatesRef = useRef<HTMLInputElement>(null!);
   const [selectedBooking, setSelectedBooking] = useState<Booking>();
   const archivePopOverRef = useRef<HTMLDivElement>(null!);
+  const canGoPreviousPage = page !== 1;
+  const canGoNextPage = ITEMS_PER_PAGE * page < bookingCount;
 
   const debounceParamsChange: (filters: string[], values: string[]) => void =
     debounce(
@@ -81,7 +88,7 @@ export default function BookingList({
           </button>
         </div>
       </div>
-      <div>Shown bookings : {bookingList.length}</div>
+      <div>Found bookings : {bookingCount}</div>
       <div className="flex flex-wrap gap-4 items-center">
         <input
           className="border w-64 rounded p-1"
@@ -140,8 +147,32 @@ export default function BookingList({
           />
         </label>
       </div>
+
+      <div className="text-center">
+        <button
+          disabled={!canGoPreviousPage}
+          className="min-[200px]:inline border px-2 rounded bg-primary-1 text-white disabled:opacity-20"
+          onClick={() =>
+            canGoPreviousPage &&
+            debounceParamsChange(["page"], [(page - 1).toString()])
+          }
+        >
+          Prev
+        </button>
+        <div className="inline-block mx-4">Current page: {page}</div>
+        <button
+          className="border px-2 rounded bg-primary-1 text-white disabled:opacity-20"
+          disabled={!canGoNextPage}
+          onClick={() =>
+            canGoNextPage &&
+            debounceParamsChange(["page"], [(page + 1).toString()])
+          }
+        >
+          Next
+        </button>
+      </div>
       <table className="table-fixed overflow-hidden w-full text-center rounded-lg">
-        <thead className="bg-table-header text-white">
+        <thead className="bg-primary-1 text-white">
           <tr>
             <th>Name</th>
             <th>Email</th>
@@ -151,53 +182,46 @@ export default function BookingList({
           </tr>
         </thead>
         <tbody>
-          {bookingList.length ? (
-            bookingList.map((booking) => (
-              <tr
-                key={booking.id}
-                className="even:bg-gray-100 odd:bg-white h-8 hover:brightness-90"
-              >
-                <td className="break-words">{booking.bookerName}</td>
-                <td className="break-words">{booking.email}</td>
-                <td>{booking.totalGuests}</td>
-                <td>
-                  {new Intl.DateTimeFormat("sv-SE", {
-                    timeStyle: "short",
-                    dateStyle: "short",
-                  }).format(booking.time)}
-                </td>
-                <td>
-                  <button
-                    popoverTarget="archive-check"
-                    onClick={() => setSelectedBooking(booking)}
-                    className="flex"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="red"
-                      className="size-6"
+          {bookingList.length
+            ? bookingList.map((booking) => (
+                <tr
+                  key={booking.id}
+                  className="even:bg-gray-100 odd:bg-white h-8 hover:brightness-90"
+                >
+                  <td className="break-words">{booking.bookerName}</td>
+                  <td className="break-words">{booking.email}</td>
+                  <td>{booking.totalGuests}</td>
+                  <td>
+                    {new Intl.DateTimeFormat("sv-SE", {
+                      timeStyle: "short",
+                      dateStyle: "short",
+                    }).format(booking.time)}
+                  </td>
+                  <td>
+                    <button
+                      popoverTarget="archive-check"
+                      onClick={() => setSelectedBooking(booking)}
+                      className="flex"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
-                      />
-                    </svg>
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr className="h-8">
-              <td className="px-4" />
-              <td className="px-4" />
-              <td className="px-4" />
-              <td className="px-4" />
-            </tr>
-          )}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="red"
+                        className="size-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              ))
+            : null}
         </tbody>
       </table>
     </div>

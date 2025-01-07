@@ -5,7 +5,10 @@ type BookingListFilters = Partial<{
   filterString: string;
   fromDate: string;
   toDate: string;
+  page: string;
 }>;
+
+export const ITEMS_PER_PAGE = 10;
 
 export default async function Admin({
   searchParams,
@@ -14,6 +17,7 @@ export default async function Admin({
 }) {
   const params = await searchParams;
   const prisma = new PrismaClient();
+  const parsedPageNumber = parseInt(params.page || "1");
 
   const whereQuery: Prisma.BookingWhereInput = {
     ...(Object.keys(params).includes("filterString") && {
@@ -33,21 +37,46 @@ export default async function Admin({
           ),
         },
       }),
+    archived: false,
   };
 
-  const bookings = await prisma.booking.findMany({
+  const bookingCount = await prisma.booking.count({ where: whereQuery });
+  const skipping = parsedPageNumber * ITEMS_PER_PAGE - ITEMS_PER_PAGE;
+  let bookings = await prisma.booking.findMany({
+    skip: skipping < 0 ? 1 : skipping, //prevents skipping negative number of items
+    take: ITEMS_PER_PAGE,
     where: {
       ...whereQuery,
-      archived: false,
     },
     orderBy: {
       time: "desc",
     },
   });
 
+  let updatePageNumber = 0;
+  // this can happen if current page ran out of items
+  if (bookings.length === 0 && params.page) {
+    // return bookings from a page down if possible
+    if (bookingCount > 0) {
+      bookings = await prisma.booking.findMany({
+        skip: (parsedPageNumber - 1) * ITEMS_PER_PAGE - ITEMS_PER_PAGE,
+        take: ITEMS_PER_PAGE,
+        where: {
+          ...whereQuery,
+        },
+        orderBy: {
+          time: "desc",
+        },
+      });
+      updatePageNumber = parsedPageNumber - 1;
+    }
+  }
+
   return (
-    <>
-      <BookingList bookingList={bookings} />
-    </>
+    <BookingList
+      bookingList={bookings}
+      page={updatePageNumber || parsedPageNumber}
+      bookingCount={bookingCount}
+    />
   );
 }

@@ -9,7 +9,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        "table-header": "#36304a"
+        "primary-1": "#36304a",
       },
     },
   },
