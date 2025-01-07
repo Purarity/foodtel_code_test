@@ -206,7 +206,7 @@ export default function BookingList({
           Next
         </button>
       </div>
-      <table className="table-fixed rounded-lg w-full text-center overflow-hidden">
+      {/* <table className="table-fixed rounded-lg w-full text-center overflow-hidden">
         <thead className="bg-primary-1 text-white">
           <tr>
             <th>Name</th>
@@ -258,7 +258,7 @@ export default function BookingList({
               ))
             : null}
         </tbody>
-      </table>
+      </table> */}
     </div>
   );
 }
