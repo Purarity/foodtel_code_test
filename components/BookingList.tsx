@@ -223,10 +223,10 @@ export default function BookingList({
                   key={booking.id}
                   className="hover:brightness-90 odd:bg-white even:bg-gray-100 h-8"
                 >
-                  {/* <td className="break-words">{booking.bookerName}</td>
+                  <td className="break-words">{booking.bookerName}</td>
                   <td className="break-words">{booking.email}</td>
                   <td>{booking.totalGuests}</td>
-                  <td>
+                  {/* <td>
                     {new Intl.DateTimeFormat("sv-SE", {
                       timeStyle: "short",
                       dateStyle: "short",
