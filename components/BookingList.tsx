@@ -2,7 +2,7 @@
 import type { Booking } from "@prisma/client";
 import debounce, { DebounceSettings } from "lodash-es/debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function BookingList({
   bookingList,
@@ -46,6 +46,31 @@ export default function BookingList({
     options?: DebounceSettings
   ) => void = debounce(paramsChange, 200, { trailing: true });
 
+  useEffect(() => {
+    console.log(
+      dateFilterCheckboxRef,
+      fromDatesRef,
+      toDatesRef,
+      selectedBooking,
+      archivePopOverRef,
+      canGoPreviousPage,
+      canGoNextPage,
+      setSelectedBooking,
+      bookingList,
+      debounceParamsChange
+    );
+  }, [
+    dateFilterCheckboxRef,
+    fromDatesRef,
+    toDatesRef,
+    selectedBooking,
+    archivePopOverRef,
+    canGoPreviousPage,
+    canGoNextPage,
+    setSelectedBooking,
+    bookingList,
+    debounceParamsChange,
+  ]);
   return (
     <></>
     // <div className="space-y-4 p-4">
