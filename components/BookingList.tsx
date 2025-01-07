@@ -227,9 +227,11 @@ export default function BookingList({
                   <td className="break-words">{booking.email}</td>
                   <td>{booking.totalGuests}</td>
                   <td>
-                    {new Intl.DateTimeFormat("sv-SE", {
+                    {new Intl.DateTimeFormat("en-GB", {
+                      timeStyle: "short",
+                    }).format(booking.time)}{" "}
+                    {new Intl.DateTimeFormat("en-GB", {
                       // timeStyle: "short",
-                      // dateStyle: "short",
                     }).format(booking.time)}
                   </td>
                   <td>
