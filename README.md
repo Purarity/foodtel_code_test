@@ -1,12 +1,19 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app)
 
-The project is a code test from Foodtelm, making a booking form for a restaurant. The entire app is mobile friendly.
+The project is a code test from Foodtel, making a booking form for a restaurant. The entire app is mobile friendly.
+
 User inputs are validated with Zod on both the frontend and server actions (backend).
+
 The database is PostgreSQL, used with Prisma ORM.
+
 Both the database and server functions are executed from Vercel's fra1 region.
+
 Tailwind CSS is used for CSS stylings.
+
 React Hook Form is used for the main form for performance and ease of use.
+
 Pagination and filtering are done from the server, lodash-es/debounce is used on the client to prevent sending too many requests at once to the server.
+
 Popover API is used when a user wants to archive a booking.
 
 ## Getting Started
