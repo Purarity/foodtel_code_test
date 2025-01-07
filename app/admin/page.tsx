@@ -1,4 +1,5 @@
 import BookingList from "@/components/BookingList";
+import { ITEMS_PER_PAGE } from "@/components/constants";
 import { Prisma, PrismaClient } from "@prisma/client";
 
 type BookingListFilters = Partial<{
@@ -7,8 +8,6 @@ type BookingListFilters = Partial<{
   toDate: string;
   page: string;
 }>;
-
-const ITEMS_PER_PAGE = 10;
 
 export default async function Admin({
   searchParams,
@@ -79,7 +78,6 @@ export default async function Admin({
       bookingList={bookings}
       page={updatePageNumber || parsedPageNumber}
       bookingCount={bookingCount}
-      ITEMS_PER_PAGE={ITEMS_PER_PAGE}
     />
   );
 }

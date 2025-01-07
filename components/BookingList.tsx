@@ -3,18 +3,17 @@ import type { Booking } from "@prisma/client";
 import debounce, { DebounceSettings } from "lodash-es/debounce";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
+import Pagination from "./Pagination";
 import Popover from "./Popover";
 
 export default function BookingList({
   bookingList,
   bookingCount,
   page,
-  ITEMS_PER_PAGE,
 }: {
   bookingList: Booking[];
   bookingCount: number;
   page: number;
-  ITEMS_PER_PAGE: number;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -24,8 +23,6 @@ export default function BookingList({
   const toDatesRef = useRef<HTMLInputElement>(null!);
   const [selectedBooking, setSelectedBooking] = useState<Booking>();
   const popoverRef = useRef<HTMLDivElement>(null!);
-  const canGoPreviousPage = page !== 1;
-  const canGoNextPage = ITEMS_PER_PAGE * page < bookingCount;
 
   function paramsChange(filters: string[], values: string[]) {
     const newSearchParams = new URLSearchParams(searchParams);
@@ -127,29 +124,11 @@ export default function BookingList({
           </div>
         </div>
 
-        {/* Pagination */}
-        <div className="text-center">
-          <button
-            disabled={!canGoPreviousPage}
-            className="min-[200px]:inline bg-primary-1 disabled:opacity-20 px-2 border rounded text-white"
-            onClick={() =>
-              canGoPreviousPage &&
-              paramsChange(["page"], [(page - 1).toString()])
-            }
-          >
-            Prev
-          </button>
-          <div className="inline-block mx-4">Current page: {page}</div>
-          <button
-            className="bg-primary-1 disabled:opacity-20 px-2 border rounded text-white"
-            disabled={!canGoNextPage}
-            onClick={() =>
-              canGoNextPage && paramsChange(["page"], [(page + 1).toString()])
-            }
-          >
-            Next
-          </button>
-        </div>
+        <Pagination
+          page={page}
+          bookingCount={bookingCount}
+          paramsChange={paramsChange}
+        />
 
         <table className="table-fixed rounded-lg w-full text-center overflow-hidden">
           <thead className="bg-primary-1 text-white">
