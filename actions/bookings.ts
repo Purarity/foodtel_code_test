@@ -8,7 +8,6 @@ import { redirect } from "next/navigation";
 const prisma = new PrismaClient();
 
 export async function archiveBooking(id: number) {
-  console.log(id);
   try {
     await prisma.booking.update({
       where: {
